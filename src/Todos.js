@@ -79,10 +79,16 @@ function Todos() {
             ) : (
               todo.text
             )}
-            <button onClick={() => toggleComplete(todo.id)}>
-              {todo.isCompleted ? 'Hoàn tác' : 'Hoàn thành'}
-            </button>
-            <button onClick={() => handleDeleteTodo(todo.id)}>Xóa</button>
+            {/* Chỉ hiển thị các nút này khi không có todo nào đang được chỉnh sửa */}
+            {editingId !== todo.id && (
+              <>
+                <button onClick={() => toggleComplete(todo.id)}>
+                  {todo.isCompleted ? 'Hoàn tác' : 'Hoàn thành'}
+                </button>
+                <button onClick={() => handleDeleteTodo(todo.id)}>Xóa</button>
+              </>
+            )}
+            {/* Nút để chuyển sang chế độ chỉnh sửa hoặc cập nhật todo */}
             {editingId === todo.id ? (
               <button onClick={() => handleUpdateTodo(todo.id, editingText)}>Cập nhật</button>
             ) : (
