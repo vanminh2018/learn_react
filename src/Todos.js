@@ -1,8 +1,7 @@
 import { useState } from 'react'
 
-function Todos () {
+function Todos() {
   console.log('render Todos...')
-  // Khởi tạo state cho danh sách công việc và giá trị input hiện tại
   const [todos, setTodos] = useState([
     {
       id: Date.now(),
@@ -11,8 +10,9 @@ function Todos () {
     }
   ])
   const [inputValue, setInputValue] = useState('')
+  const [editingId, setEditingId] = useState(null) // State mới để theo dõi id của công việc đang được sửa
+  const [editingText, setEditingText] = useState('') // State để theo dõi nội dung đang sửa
 
-  // Hàm xử lý thêm công việc mới
   const handleAddTodo = () => {
     console.log('fn handleAddTodo...', inputValue)
     if (inputValue.trim()) {
@@ -28,7 +28,6 @@ function Todos () {
     }
   }
 
-  // Hàm xử lý đánh dấu hoàn thành công việc
   const toggleComplete = id => {
     console.log('fn toggleComplete...', id)
     setTodos(
@@ -38,10 +37,24 @@ function Todos () {
     )
   }
 
-  // Hàm xử lý xóa công việc
   const handleDeleteTodo = id => {
     console.log('fn handleDeleteTodo...', id)
     setTodos(todos.filter(todo => todo.id !== id))
+  }
+
+  // Hàm xử lý bắt đầu sửa công việc
+  const handleEditTodo = (todo) => {
+    setEditingId(todo.id)
+    setEditingText(todo.text)
+  }
+
+  // Hàm xử lý cập nhật công việc sau khi sửa
+  const handleUpdateTodo = (id, newText) => {
+    if (newText.trim()) {
+      setTodos(todos.map(todo => (todo.id === id ? { ...todo, text: newText } : todo)))
+      setEditingId(null)
+      setEditingText('')
+    }
   }
 
   return (
@@ -57,11 +70,24 @@ function Todos () {
       <ul>
         {todos.map(todo => (
           <li key={todo.id} style={{ textDecoration: todo.isCompleted ? 'line-through' : 'none' }}>
-            {todo.text}
+            {editingId === todo.id ? (
+              <input
+                type='text'
+                value={editingText}
+                onChange={(e) => setEditingText(e.target.value)}
+              />
+            ) : (
+              todo.text
+            )}
             <button onClick={() => toggleComplete(todo.id)}>
               {todo.isCompleted ? 'Hoàn tác' : 'Hoàn thành'}
             </button>
             <button onClick={() => handleDeleteTodo(todo.id)}>Xóa</button>
+            {editingId === todo.id ? (
+              <button onClick={() => handleUpdateTodo(todo.id, editingText)}>Cập nhật</button>
+            ) : (
+              <button onClick={() => handleEditTodo(todo)}>Sửa</button>
+            )}
           </li>
         ))}
       </ul>
